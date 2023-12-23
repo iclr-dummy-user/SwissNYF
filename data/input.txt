@@ -1,0 +1,7 @@
+"Summarize issues similar to don:core:dvrv-us-1:devo/0:issue/1"
+"Prioritize my P0 issues and add them to the current sprint"
+"Summarize high severity tickets from the customer UltimateCustomer"
+"What are my all issues in the triage stage under part FEAT-123? Summarize them."
+"List all high severity tickets coming in from slack from customer Cust123 and generate a summary of them."
+"Given a customer meeting transcript T, create action items and add them to my current sprint"
+"Get all work items similar to TKT-123, summarize them, create issues from that summary, and prioritize them"

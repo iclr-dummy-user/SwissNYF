@@ -1,0 +1,8 @@
+pipeline: reversechain
+retriever: gear
+llm: openai
+retriever_model: instruct-xl
+tools_type: llama
+output: output.jsonl
+
+
