@@ -1,0 +1,121 @@
+google_search:
+  tool: google_search
+  description: Make a query to the Google search engine to receive a list of results.
+  arguments:
+    - name: query
+      type: string
+      description: The query to be passed to Google search.
+      example: "How to make a cake"
+    - name: num
+      type: integer (1 to 10)
+      description: The number of search results to return.
+      example: 5
+
+read_google_search:
+  tool: read_google_search
+  description: Once data has been loaded from google_search it can then be read using a natural language query.
+  arguments:
+    - name: query
+      type: string
+      description: The natural language query used to retrieve information from the index.
+      example: "How to bake a cake"
+
+search_data:
+  tool: search_data
+  description: Searches Wikipedia for pages related to a query. Use this endpoint when load_data returns no results.
+  arguments:
+    - name: query
+      type: string
+      description: The string to search for.
+      example: "Albert Einstein"
+
+
+read_search_data:
+  tool: read_search_data
+  description: |
+    Once data has been loaded from search_data it can then be read using a natural language query.
+  arguments:
+    - name: query
+      type: string
+      description: The natural language query used to retrieve information from the index.
+      example: "Theory of Relativity"
+
+speech_to_text:
+  tool: speech_to_text
+  description: Accepts a filename for a speech audio file and uses Azure to transcribe it into text.
+  arguments:
+    - name: filename
+      type: string
+      description: The name of the file to transcribe.
+      example: "speech.wav"
+
+text_to_speech:
+  tool: text_to_speech
+  description: Accepts a natural language string and uses Azure speech services to create an audio version of the text, playing it on the user's computer.
+  arguments:
+    - name: text
+      type: string
+      description: The text to play.
+      example: "Hello, how are you?"
+
+translate:
+  tool: translate
+  description: Translates text from one language to another.
+  arguments:
+    - name: text
+      type: string
+      description: Text to be translated.
+      example: "Hello, how are you?"
+    - name: language
+      type: string
+      description: Target translation language (two character language code).
+      example: "fr"
+
+arxiv_query:
+  tool: arxiv_query
+  description: Queries arxiv.org for mathematical or scientific papers.
+  arguments:
+    - name: query
+      type: string
+      description: The query to be passed to arXiv.
+      example: "Quantum Computing"
+    - name: sort_by
+      type: string
+      description: Either 'relevance' or 'recent' (default is 'relevance').
+      example: "relevance"
+
+bing_news_search:
+  tool: bing_news_search
+  description: Makes a query to Bing News search.
+  arguments:
+    - name: query
+      type: string
+      description: The query to be passed to Bing.
+      example: "COVID-19 updates"
+
+bing_image_search:
+  tool: bing_image_search
+  description: Makes a query to Bing Images search.
+  arguments:
+    - name: query
+      type: string
+      description: The query to be passed to Bing.
+      example: "Golden Gate Bridge"
+
+bing_video_search:
+  tool: bing_video_search
+  description: Makes a query to Bing Video search.
+  arguments:
+    - name: query
+      type: string
+      description: The query to be passed to Bing.
+      example: "How to bake a cake"
+
+wolfram_alpha_query:
+  tool: wolfram_alpha_query
+  description: Queries Wolfram Alpha about a mathematical or scientific problem.
+  arguments:
+    - name: query
+      type: string
+      description: The query to be passed to Wolfram Alpha.
+      example: "integral of x squared"

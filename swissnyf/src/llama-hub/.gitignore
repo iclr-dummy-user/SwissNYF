@@ -1,0 +1,10 @@
+*.egg-info/
+.modules
+
+**/__pycache__/
+.venv
+**/.DS_Store
+.vscode
+.idea/
+llama-hub.iml
+llamahub/
