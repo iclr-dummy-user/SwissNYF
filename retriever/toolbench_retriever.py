@@ -2,6 +2,37 @@ from sentence_transformers import SentenceTransformer, util
 from retriever.base_retriever import BaseRetriever
 import pprint
 
+import torch
+
+import replicate
+
+class ToolBenchIRReplicate:
+    def __init__(self):
+        self.rep_id = "hex-plex/toolbench_ir:513992c14b58e70901ac12146a391e9eebe97c1ae683724d44521ca50ef4a2c8"
+
+    def encode_single(self, text, *args, **kwargs):
+        output = replicate.run(
+            self.rep_id,
+            input={
+                "text": text,
+            }
+        )
+        vec = output.get('vectors')
+        if kwargs.get("convert_to_tensor"):
+            vec = torch.tensor(vec)
+        return vec
+    
+    def encode(self, texts, *args, **kwargs):
+        if isinstance(texts, str):
+            return self.encode_single(texts, *args, **kwargs)
+        elif isinstance(texts, list):
+            vecs = []
+            for text in texts:
+                vecs.append(self.encode_single(texts, *args, **kwargs))
+            if kwargs.get("convert_to_tensor"):
+                vecs = torch.stack(vecs)
+            return vecs
+    
 class ToolBenchRet(BaseRetriever):
     
     def __init__(self, **kwargs) -> None:

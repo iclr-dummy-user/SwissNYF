@@ -1,2 +1,2 @@
 # SwissNYF
-code for front and backend for Devrev 2
+code for backend for swissnyf

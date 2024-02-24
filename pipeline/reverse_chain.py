@@ -276,10 +276,14 @@ class ReverseChain(BasePipeline):
     _reverse_chain_corpus = []
     tool_defs = []
     all_tools = []
-    def __init__(self, filter_method, llm):
+    def __init__(self, filter_method, llm, codesynth_cache=False):
         self.filter_method = filter_method
         self.llm = llm
+        self.codesynth_cache = codesynth_cache
 
+    def save_cache(self):
+        self.code_synth.save_cache()
+        
     def set_tools(self, tool_descs:List[str], tool_names:List[str]):
         for tool_desc, tool_name in tqdm(zip(tool_descs,tool_names)):
             self.add_tool(tool_desc, tool_name)
@@ -306,7 +310,7 @@ class ReverseChain(BasePipeline):
         retries = 0
         while not completed and retries<max_retries:
             try:
-                tool_def = self.code_synth.forward(tool_name, new_tool_desc, self.llm)
+                tool_def = self.code_synth.forward(tool_name, new_tool_desc, self.llm, cache=self.codesynth_cache)
                 formated_tool_def = self.format_tool_def(tool_def, tool_name)
                 completed = True
             except Exception as e:

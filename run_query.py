@@ -71,6 +71,9 @@ def main():
     # add arg.llm to parser
     parser.add_argument("--llm", type=str, default="azure", help="llm")
 
+    # add arg.cache to codesynth
+    parser.add_argument("--cache", type=bool, default=False, help="Use cache for codesynth")
+    
     # add args.verbose to parser
     parser.add_argument("--verbose", type=bool, default=False, help="verbose")
 
@@ -85,7 +88,8 @@ def main():
     
     if args.tools is not None:
         tools = Tools(args.tools)
-    
+        
+    use_cache = args.cache
     verbose = args.verbose
     
     all_tools_list = tools.get_tools_list()
@@ -133,9 +137,9 @@ def main():
     # # instantiate reversechain and topgun pipeline object as per pipeline file from args param pipeline
     if args.pipeline is not None:
         if args.pipeline == "reversechain":
-            pipeline = ReverseChain(filter_method=retriever, llm=llm)
+            pipeline = ReverseChain(filter_method=retriever, llm=llm, codesynth_cache=use_cache)
         elif args.pipeline == "topgun":
-            pipeline = TopGun(filter_method=retriever, llm=llm)
+            pipeline = TopGun(filter_method=retriever, llm=llm, codesynth_cache=use_cache)
         else:
             raise Exception("pipeline method not supported")
     
@@ -184,7 +188,7 @@ def main():
                 except Exception as e:
                     print(f"Retrying query: {query},  {e}")
                     retries+=1
-    
+    pipeline.save_cache()
     # print("Pipeline is run on query")
    
 

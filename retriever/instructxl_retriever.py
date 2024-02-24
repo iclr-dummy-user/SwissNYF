@@ -3,6 +3,38 @@ from collections import Counter
 from InstructorEmbedding import INSTRUCTOR
 from retriever.base_retriever import BaseRetriever
 import pprint
+import torch
+
+import replicate
+
+
+
+class InstructorXLReplicate:
+    def __init__(self):
+        self.rep_id = "hex-plex/instructor-xl:5df148623d8c849d7d0dc8e7986ed0d7d33a3f90799da745260f4d020e97591c"
+
+    def encode_single(self, text, *args, **kwargs):
+        output = replicate.run(
+            self.rep_id,
+            input={
+                "text": text,
+            }
+        )
+        vec = output.get('vectors')
+        if kwargs.get("convert_to_tensor"):
+            vec = torch.tensor(vec)
+        return vec
+    
+    def encode(self, texts, *args, **kwargs):
+        if isinstance(texts, str):
+            return self.encode_single(texts, *args, **kwargs)
+        elif isinstance(texts, list):
+            vecs = []
+            for text in texts:
+                vecs.append(self.encode_single(texts, *args, **kwargs))
+            if kwargs.get("convert_to_tensor"):
+                vecs = torch.stack(vecs)
+            return vecs
 
 class InstructRet(BaseRetriever):
     
@@ -12,7 +44,7 @@ class InstructRet(BaseRetriever):
         self.model_name  = 'hkunlp/instructor-xl'
         
         # Load the trained model
-        self.model = INSTRUCTOR(self.model_name).to(self.device) 
+        self.model = InstructorXLReplicate()
 
     def set_tool_def(self, tool_def) -> None:
         super().set_tool_def(tool_def)

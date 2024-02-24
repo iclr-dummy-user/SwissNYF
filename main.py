@@ -77,9 +77,8 @@ all_tools_list = None
 all_tools_names = None #python-app
 all_tools_desc = None
 retriever = DummyRetriever(tools)
-pipeline_topgun = TopGun(filter_method=retriever, llm=llm)
-pipeline_reverse = ReverseChain(filter_method=retriever, llm=llm)
-
+pipeline_topgun = TopGun(filter_method=retriever, llm=llm, codesynth_cache=True)
+pipeline_reverse = ReverseChain(filter_method=retriever, llm=llm, codesynth_cache=True)
 
 from pydantic import BaseModel
 

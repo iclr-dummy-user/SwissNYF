@@ -19,8 +19,12 @@ from typing import List
 from functools import wraps
 from collections.abc import Iterable
 import inspect, itertools 
+import traceback
 
+from io import StringIO  
 
+traverse_dict = {}
+function_tree = []
 ## Wrapper
 def update_traverse_dict(func):
     @wraps(func)  # This decorator preserves the original function's metadata.
@@ -36,7 +40,7 @@ def update_traverse_dict(func):
                 traverse_dict[arg_id]["arg_name"].append(name_arg)
             else:
                 flag_iter = False
-                if isinstance(arg, Iterable):
+                if isinstance(arg, Iterable) and not isinstance(arg, str):
                     for arg_indv in arg:
                         arg_id = id(arg_indv)
                         if arg_id in traverse_dict:
@@ -53,7 +57,7 @@ def update_traverse_dict(func):
                 traverse_dict[arg_id]["arg_name"].append(k)
             else:
                 flag_iter = False
-                if isinstance(arg, Iterable):
+                if isinstance(arg, Iterable) and not isinstance(arg, str):
                     for arg_indv in arg:
                         arg_id = id(arg_indv)
                         if arg_id in traverse_dict:
@@ -98,7 +102,7 @@ def parse_output(traversed_dict, func_tree):
                     continue
                 answer[-1]["arguments"].append({
                                             "argument_name": v["arg_name"][idx],
-                                            "argument_value": v["value"] if len(v["traj"])==1 else k
+                                            "argument_value": v["value"] #if len(v["traj"])==1 else k
                                             } )
 
     for answer_call in answer:
@@ -113,24 +117,55 @@ def parse_output(traversed_dict, func_tree):
 class TopGun(BasePipeline):
     
     QUERY_CODE_INTERPRETER_PROMPT = """
-             You are a python code generating wizard. Today you are challenged to generate a
-             python code for executing a query. You will be given a list of pseudo functions
-             which you will use in your python code to help you in solving the query correctly.
-             Understand the query properly and use the required function to solve it.
+                    You are a Python code assistant. Today you are challenged to generate a
+                    python code for executing a query. You will be given a list of pseudo functions
+                    which you will use in your python code to help you in solving the query correctly.
+                    Understand the query properly and use the required function to solve it. 
+                    
+                    We have following pseudo functions:
+                    =====
+                    {}
+                    =====
 
-             We have following pseudo functions:
-             =====
-             {}
-             =====
+                    You have to make sure to follow the below guardrails:
+                    - Do not use double quotes only use single quotes.
+                    - You are not allowed to define any functions, always must use the given functions in the code.
+                    - If in case you end up creating a function please rememeber to have a decorator named @update_traverse_dict on them.
+                    - Do not create a main function script and using 'if __name__ == "__main__"' is strictly prohibited. 
+                    - Always have to the code within ```python\n<--Your Code-->\n```
+                    - Always remember to use .get() to fetch values from a dictionary or a json.
+                    - Always remember to replace the values in .get() of the generated code with a value
+                      that matches the description of its key and dictionary whose argument it is. Use your knowledge of the world
+                      to replace the value with a good real example. 
+                      Example:
+                          contact = company_info.get('contact_number', '999991999')
+                          name = company_info.get('name', 'indigo')
 
-             Let's start
+                      Remember to Keep the values inside single quotes' '. 
+                    - This is also required when accessing value of list use try: except: and in except: use a value that matches the description of the output.
+                    - Never use print statement the user can use the variables in the code to infer himself of the code.
+                    
+                    You have to remember the below to solve the query:
+                    - Always remember if a function is to input or output an object assume object to be an string.
+                    - Always remember to use the API key that has been porvided above, if required.  
 
-             If the query is {}
-             Return the python code to excute it with help of given pseudo functions.
-             do not use double quotes only use single quotes.
-             Always have to the code within ```python\n<--Your Code-->\n```
-             Always remember if a function is to input or output an object assume object to be an string.
-            """
+                    If the query is {}
+                    Return the python code to excute it with help of given pseudo functions.
+                    """
+    
+    REFLEXION_PROMPT = """
+                    
+                    You are a Python code assistant. You will be given your previous chat history, your 
+                    previous code implementation of solving a query and, error in your implementation.
+                    Taking the error into account, refactor the code for correctly solving the user query.
+                    
+                    Previous chat: {}
+                    Previous code implementation: {}
+                    Error: {}
+                    
+                    Refactored code:
+                    
+                    """
     
     code_synth = CodeSynth()
     _topgun_corpus = []

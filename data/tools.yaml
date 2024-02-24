@@ -1,102 +1,121 @@
-add_work_items_to_sprint:
-  tool: add_work_items_to_sprint
-  description: Adds the given work items to the sprint.
+google_search:
+  tool: google_search
+  description: Make a query to the Google search engine to receive a list of results.
   arguments:
-    - name: work_ids
-      type: array of strings
-      description: The list of work item IDs to add to the sprint.
-      example: '["123","456"]'
-    - name: sprint_id
+    - name: query
       type: string
-      description: The ID of the sprint to which the work items should be added.
-      example: SPRINT-123
+      description: The query to be passed to Google search.
+      example: "How to make a cake"
+    - name: num
+      type: integer (1 to 10)
+      description: The number of search results to return.
+      example: 5
 
-works_list:
-  tool: "works_list"
-  description: "Returns a list of work items matching the request"
+read_google_search:
+  tool: read_google_search
+  description: Once data has been loaded from google_search it can then be read using a natural language query.
   arguments:
-    - name: "applies_to_part"
-      type: "array of strings"
-      description: "Filters for work belonging to any of the provided parts"
-      example: '["FEAT-123", "ENH-123", "PROD-123", "CAPL-123"]'
-    - name: "created by"
-      type: "array of strings"
-      description: "Filters for work created by any of the provided users"
-      example: '["DEVU-1231"]'
-    - name: "issue.priority"
-      type: "array of strings"
-      description: "Filters for issues with any of the provided priorities. Allowed values: po, p1, p2, p3"
-      example: '["po", "p1"]'
-    - name: "issue.rev_orgs"
-      type: "array of strings"
-      description: "Filters for issues with any of the provided Rev organizations"
-      example: '["REV-123"]'
-    - name: "limit"
-      type: "integer (int32)"
-      description: "The maximum number of works to return."
-    - name: "owned by"
-      type: "array of strings"
-      description: "Filters for work owned by any of the provided users"
-      example: '["DEVU-123"]'
-    - name: "stage.name"
-      type: "array of strings"
-      description: "Filters for records in the provided stage(s) by name"
-    - name: "ticket.needs_response"
-      type: "boolean"
-      description: "Filters for tickets that need a response"
-    - name: "ticket.rev_org"
-      type: "array of strings"
-      description: "Filters for tickets associated with any of the provided Rev organizations"
-      example: '["REV-123"]'
-    - name: "ticket.severity"
-      type: "array of strings"
-      description: "Filters for tickets with any of the provided severities. Allowed values: bloc, high, medium, low"
-
-get_sprint_id:
-  tool: get_sprint_id
-  description: Returns the ID of the current sprint
-
-get_similar_work_items:
-  tool: get_similar_work_items
-  description: Returns a list of work items that are similar to the given work.
-  arguments:
-    - name: work_id
+    - name: query
       type: string
-      description: The ID of the workitem for which you want to find similar items
+      description: The natural language query used to retrieve information from the index.
+      example: "How to bake a cake"
 
-search_object_by_name:
-  tool: search_object_by_name
-  description: Given a search string, returns the id of a matching object in the system of record. If multiple matches are found, 
-              it returns the one where the confidence is highest.
+search_data:
+  tool: search_data
+  description: Searches Wikipedia for pages related to a query. Use this endpoint when load_data returns no results.
   arguments:
-      - name: query 
-        description: "The search string, could be for example customer's name, part name, user name."
-        type: string
+    - name: query
+      type: string
+      description: The string to search for.
+      example: "Albert Einstein"
 
-create_actionable_tasks_from_text:
-  tool: create_actionable_tasks_from_text
-  description: Given a text, extracts actionable insights, and creates tasks for them, which are kind of a work item.
+
+read_search_data:
+  tool: read_search_data
+  description: |
+    Once data has been loaded from search_data it can then be read using a natural language query.
+  arguments:
+    - name: query
+      type: string
+      description: The natural language query used to retrieve information from the index.
+      example: "Theory of Relativity"
+
+speech_to_text:
+  tool: speech_to_text
+  description: Accepts a filename for a speech audio file and uses Azure to transcribe it into text.
+  arguments:
+    - name: filename
+      type: string
+      description: The name of the file to transcribe.
+      example: "speech.wav"
+
+text_to_speech:
+  tool: text_to_speech
+  description: Accepts a natural language string and uses Azure speech services to create an audio version of the text, playing it on the user's computer.
   arguments:
     - name: text
       type: string
-      description: The text from which the actionable insights need to be created.
+      description: The text to play.
+      example: "Hello, how are you?"
 
-who_am_i:
-  tool: who_am_i
-  description: Returns the ID of the current user
-
-summarize_objects:
-  tool: summarize_objects
-  description: Summarizes a list of objects. The logic of how to summarize a particular object type is an internal implementation detail.
+translate:
+  tool: translate
+  description: Translates text from one language to another.
   arguments:
-    - name: objects
-      type: array of objects
-      description: List of objects to summarize
+    - name: text
+      type: string
+      description: Text to be translated.
+      example: "Hello, how are you?"
+    - name: language
+      type: string
+      description: Target translation language (two character language code).
+      example: "fr"
 
-prioritize_objects:
-  tool: prioritize_objects
-  description: Returns a list of objects sorted by priority. The logic of what constitutes priority for a given object is an internal implementation detail.
+arxiv_query:
+  tool: arxiv_query
+  description: Queries arxiv.org for mathematical or scientific papers.
   arguments:
-    - name: objects
-      type: array of objects
-      description: A list of objects to be prioritized
+    - name: query
+      type: string
+      description: The query to be passed to arXiv.
+      example: "Quantum Computing"
+    - name: sort_by
+      type: string
+      description: Either 'relevance' or 'recent' (default is 'relevance').
+      example: "relevance"
+
+bing_news_search:
+  tool: bing_news_search
+  description: Makes a query to Bing News search.
+  arguments:
+    - name: query
+      type: string
+      description: The query to be passed to Bing.
+      example: "COVID-19 updates"
+
+bing_image_search:
+  tool: bing_image_search
+  description: Makes a query to Bing Images search.
+  arguments:
+    - name: query
+      type: string
+      description: The query to be passed to Bing.
+      example: "Golden Gate Bridge"
+
+bing_video_search:
+  tool: bing_video_search
+  description: Makes a query to Bing Video search.
+  arguments:
+    - name: query
+      type: string
+      description: The query to be passed to Bing.
+      example: "How to bake a cake"
+
+wolfram_alpha_query:
+  tool: wolfram_alpha_query
+  description: Queries Wolfram Alpha about a mathematical or scientific problem.
+  arguments:
+    - name: query
+      type: string
+      description: The query to be passed to Wolfram Alpha.
+      example: "integral of x squared"
