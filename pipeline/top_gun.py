@@ -257,7 +257,7 @@ class TopGun(BasePipeline):
                 
         except Exception as ex:
             temp_out = StringIO()
-            print(traceback.format_exc())
+            temp_out.write(traceback.format_exc())
             # print("\nException:",e, "\n")
             # self.feedback = traceback.format_exc()
             self.feedback = temp_out.getvalue()
@@ -276,23 +276,24 @@ class TopGun(BasePipeline):
         retries = 0
 
         response = self.llm.complete(query_code_interpreter)
-        yield response.text
+        yield f"{response.text}\n"
         parsed_response = self.parser(response.text, mapping)
         
         while not completed and retries<max_retries:
             if parsed_response is None:
                 retries+=1
                 # print(response.text, "\n")
+                yield f"\n```python\n{self.feedback}\n```\n"
                 response = self.llm.complete(self.REFLEXION_PROMPT.format(query_code_interpreter, response.text, self.feedback))
-                yield response.text
+                yield f"{response.text}\n"
                 parsed_response = self.parser(response.text, mapping)
-                yield f"\n```javascript\n{json.dumps(parsed_response, indent=4)}\n```\n"
+                
             else:
-                yield f"\n```javascript\n{json.dumps(parsed_response, indent=4)}\n```\n"
                 completed = True
                 self.feedback = None
                 
         if completed:
+            yield f"\n```javascript\n{json.dumps(parsed_response, indent=4)}\n```\n"
             return json.dumps(parsed_response, indent=4) # ToDO: Check
         else:
             return response.text
